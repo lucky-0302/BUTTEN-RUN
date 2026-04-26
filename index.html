@@ -2,20 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>BUTTEN-RUN:짱짱멋진 럭키</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUTTEN-RUN:짱짱멋진 럭키, 정우 바보</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; font-family: 'Arial Black', sans-serif; touch-action: none; }
+        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; font-family: 'Arial Black', sans-serif; }
         
-        .btn {
-            position: absolute; padding: 20px 40px; font-size: 24px; font-weight: 900;
-            color: white; border: none; border-radius: 50px; cursor: pointer;
-            z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            animation: rainbow 0.8s infinite linear;
-            transition: left 0.15s ease-out, top 0.15s ease-out, transform 0.2s ease;
-            white-space: nowrap;
-        }
-
+        /* 메인 버튼 */
         @keyframes rainbow {
             0% { background: #ff0000; box-shadow: 0 0 20px #ff0000; }
             33% { background: #00ff00; box-shadow: 0 0 20px #00ff00; }
@@ -23,12 +15,22 @@
             100% { background: #ff0000; box-shadow: 0 0 20px #ff0000; }
         }
 
+        .btn {
+            position: absolute; padding: 20px 40px; font-size: 24px; font-weight: 900;
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            animation: rainbow 0.8s infinite linear;
+            transition: left 0.1s ease, top 0.1s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
+        }
+
+        /* 섬광 레이어 */
         #flash-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; opacity: 0; pointer-events: none; z-index: 1000;
             display: flex; justify-content: center; align-items: center;
         }
-        #flash-text { color: black; font-size: 3rem; font-weight: 900; display: none; }
+        #flash-text { color: black; font-size: 5rem; font-weight: 900; display: none; }
 
         .effect { position: absolute; pointer-events: none; z-index: 50; font-size: 40px; }
         @keyframes popOut {
@@ -36,12 +38,12 @@
             100% { transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
         }
 
-        h1 { position: absolute; width: 100%; text-align: center; color: #fff; top: 10%; pointer-events: none; z-index: 10; padding: 0 20px; box-sizing: border-box; }
+        h1 { position: absolute; width: 100%; text-align: center; color: #fff; top: 10%; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <h1>💎버튼을 누르면 럭키마켓 평생 God 지급!💎</h1>
+    <h1>🔥버튼을 누르면 럭키마켓 평생 God 지급!🔥</h1>
     <button id="main-btn" class="btn">지금 클릭!</button>
     
     <div id="flash-layer"><span id="flash-text">✨섬광탄✨</span></div>
@@ -50,59 +52,66 @@
         const btn = document.getElementById('main-btn');
         const flashLayer = document.getElementById('flash-layer');
         const flashText = document.getElementById('flash-text');
-        const emojis = ['😂', '👅', '🚫', '👻', '🤡', '✨', '🥶', '🎶', '😒', '💩'];
+        const emojis = ['😂', '👅', '💨', '🚫', '👻', '🤡', '💩', '✨', '🔥', '🥶', '🎶'];
 
-        let isBarrierMode = false;
-
-        // 1. 공통 도망가기 로직
         function troll() {
-            if (isBarrierMode) return;
+            // 1. [추가] 15% 확률로 분신술 발동
+            if (Math.random() < 0.15) {
+                for(let i=0; i<12; i++) {
+                    const clone = btn.cloneNode(true);
+                    clone.id = ""; // ID 중복 방지
+                    clone.style.left = Math.random() * 90 + 5 + '%';
+                    clone.style.top = Math.random() * 90 + 5 + '%';
+                    clone.style.opacity = "0.6";
+                    clone.innerText = "눌러봐!";
+                    clone.style.pointerEvents = "auto";
+                    
+                    // 가짜 누르면 알림창 띄우기
+                    clone.onclick = () => alert("속았네, 다시 시도해봐 :D");
+                    
+                    document.body.appendChild(clone);
+                    // 1.5초 뒤에 사라짐
+                    setTimeout(() => clone.remove(), 1500);
+                }
+            }
 
-            if (Math.random() < 0.15) { activateBarrier(); return; }
-
+            // 2. 20% 확률로 섬광탄 발동 (기존 유지)
             if (Math.random() < 0.2) {
                 flashLayer.style.opacity = '1';
                 flashText.style.display = 'block';
-                moveRandom();
+                
+                btn.style.left = Math.random() * 80 + 10 + '%';
+                btn.style.top = Math.random() * 80 + 10 + '%';
+
                 setTimeout(() => {
-                    flashLayer.style.transition = 'opacity 1.5s';
+                    flashLayer.style.transition = 'opacity 2s ease-out';
                     flashLayer.style.opacity = '0';
-                    setTimeout(() => { flashText.style.display = 'none'; }, 1500);
+                    setTimeout(() => {
+                        flashLayer.style.transition = 'none';
+                        flashText.style.display = 'none';
+                    }, 2000);
                 }, 500);
                 return;
             }
 
-            moveRandom();
-            spawnEmojis();
-        }
+            // 3. 일반 도망가기 및 크기 조절 (기존 유지)
+            const newX = Math.random() * 80 + 10;
+            const newY = Math.random() * 80 + 10;
+            btn.style.left = newX + '%';
+            btn.style.top = newY + '%';
 
-        function moveRandom() {
-            btn.style.left = Math.random() * 80 + 10 + '%';
-            btn.style.top = Math.random() * 80 + 10 + '%';
-            btn.style.transform = `translate(-50%, -50%) scale(${Math.random() * 1.5 + 0.5})`;
-        }
+            const randomScale = Math.random() * 1.7 + 0.3;
+            btn.style.transform = `translate(-50%, -50%) scale(${randomScale})`;
 
-        function activateBarrier() {
-            isBarrierMode = true;
-            btn.innerText = "🛡️ 접근 불가";
-            btn.style.boxShadow = "0 0 50px #ff00ff";
-            setTimeout(() => {
-                isBarrierMode = false;
-                btn.innerText = "지금 클릭!";
-                btn.style.boxShadow = "none";
-                troll();
-            }, 3000);
-        }
-
-        function spawnEmojis() {
-            for(let i=0; i<6; i++) {
+            // 4. 이모지 효과 (기존 유지)
+            for(let i=0; i<8; i++) {
                 const el = document.createElement('div');
                 el.className = 'effect';
                 el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 el.style.left = btn.style.left;
                 el.style.top = btn.style.top;
-                const moveX = (Math.random() - 0.5) * 300 + 'px';
-                const moveY = (Math.random() - 0.5) * 300 + 'px';
+                const moveX = (Math.random() - 0.5) * 400 + 'px';
+                const moveY = (Math.random() - 0.5) * 400 + 'px';
                 el.style.setProperty('--x', moveX);
                 el.style.setProperty('--y', moveY);
                 el.style.animation = 'popOut 0.8s forwards';
@@ -111,40 +120,9 @@
             }
         }
 
-        // 2. 핵심: PC(마우스)와 폰(터치) 모두에서 밀어내기
-        function handleMove(inputX, inputY) {
-            if (!isBarrierMode) return;
-
-            const btnRect = btn.getBoundingClientRect();
-            const btnX = btnRect.left + btnRect.width / 2;
-            const btnY = btnRect.top + btnRect.height / 2;
-            
-            const distance = Math.sqrt(Math.pow(inputX - btnX, 2) + Math.pow(inputY - btnY, 2));
-
-            // 150px 안으로 들어오면 밀어내기
-            if (distance < 150) {
-                const angle = Math.atan2(inputY - btnY, inputX - btnX);
-                const pushX = Math.cos(angle) * -150;
-                const pushY = Math.sin(angle) * -150;
-
-                btn.style.left = (btnX + pushX) + 'px';
-                btn.style.top = (btnY + pushY) + 'px';
-            }
-        }
-
-        // PC 마우스 이동 감지
-        document.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
-
-        // 폰 터치 이동 감지 (화면을 훑을 때)
-        document.addEventListener('touchmove', (e) => {
-            const touch = e.touches[0];
-            handleMove(touch.clientX, touch.clientY);
-        }, { passive: false });
-
         btn.addEventListener('mouseover', troll);
         btn.addEventListener('touchstart', (e) => { e.preventDefault(); troll(); });
-
-        btn.onclick = () => alert("사실 구라에요 ☆*: .｡. o(≧▽≦)o .｡.:*☆");
+        btn.onclick = () => alert("사실 구라에요, 다음 기회에..☆*: .｡. o(≧▽≦)o .｡.:*☆");
     </script>
 </body>
 </html>
