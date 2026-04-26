@@ -3,123 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BUTTEN-RUN: 절대 못 누름</title>
+    <title>BUTTEN-RUN: 섬광 주의</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #111; overflow: hidden; font-family: 'Arial', sans-serif; cursor: crosshair; }
-        #game-container { position: relative; width: 100vw; height: 100vh; }
+        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; font-family: 'Arial Black', sans-serif; }
         
         /* 메인 버튼 */
+        @keyframes rainbow {
+            0% { background: #ff0000; box-shadow: 0 0 20px #ff0000; }
+            33% { background: #00ff00; box-shadow: 0 0 20px #00ff00; }
+            66% { background: #0000ff; box-shadow: 0 0 20px #0000ff; }
+            100% { background: #ff0000; box-shadow: 0 0 20px #ff0000; }
+        }
+
         .btn {
-            position: absolute; padding: 15px 30px; font-size: 20px; font-weight: bold;
-            color: white; background: linear-gradient(45deg, #ff0055, #ff5500);
-            border: none; border-radius: 50px; cursor: pointer;
-            transition: transform 0.1s ease, opacity 0.1s ease;
+            position: absolute; padding: 20px 40px; font-size: 24px; font-weight: 900;
+            color: white; border: none; border-radius: 50px; cursor: pointer;
             z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            animation: rainbow 0.8s infinite linear;
+            transition: left 0.1s ease, top 0.1s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
         }
 
-        /* 섬광탄 효과 */
-        #flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 999; }
-        
-        /* 로딩바 */
-        #loading-screen {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; color: white;
+        /* 섬광 레이어 */
+        #flash-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; opacity: 0; pointer-events: none; z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
         }
-        .progress-bar { width: 80%; height: 20px; border: 2px solid #fff; border-radius: 10px; margin-top: 20px; overflow: hidden; }
-        .progress { width: 0%; height: 100%; background: #00ff00; transition: width 1s ease; }
+        #flash-text { color: black; font-size: 5rem; font-weight: 900; display: none; }
 
-        /* 가짜 버튼(분신술) */
-        .clone { position: absolute; opacity: 0.7; pointer-events: auto; }
+        .effect { position: absolute; pointer-events: none; z-index: 50; font-size: 40px; }
+        @keyframes popOut {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
+        }
 
-        h1 { position: absolute; width: 100%; text-align: center; color: #555; top: 20px; pointer-events: none; }
+        h1 { position: absolute; width: 100%; text-align: center; color: #fff; top: 10%; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
-        <h1>버튼을 누르면 77,777 보석 지급!</h1>
-        <button id="main-btn" class="btn">보석 받기 💎</button>
-    </div>
-
-    <div id="flash"></div>
-    <div id="loading-screen">
-        <h2 id="loading-msg">데이터 불러오는 중...</h2>
-        <div class="progress-bar"><div id="progress" class="progress"></div></div>
-    </div>
+    <h1>💎버튼을 누르면 럭키마켓 평생 God 지급!💎</h1>
+    <button id="main-btn" class="btn">지금 클릭!</button>
+    
+    <div id="flash-layer"><span id="flash-text">섬광탄이다!</span></div>
 
     <script>
         const btn = document.getElementById('main-btn');
-        const flash = document.getElementById('flash');
-        const loadingScreen = document.getElementById('loading-screen');
-        const progress = document.getElementById('progress');
-        const container = document.getElementById('game-container');
+        const flashLayer = document.getElementById('flash-layer');
+        const flashText = document.getElementById('flash-text');
+        const emojis = ['😂', '👅', '💨', '🚫', '👻', '🤡'];
 
-        let isTrolling = false;
-
-        function runAway() {
-            if (isTrolling) return;
-            
-            // 1~7번 중 무작위 효과 발동
-            const effect = Math.floor(Math.random() * 7) + 1;
-
-            if (effect === 1) { // 분신술
-                for(let i=0; i<15; i++) {
-                    const clone = btn.cloneNode(true);
-                    clone.classList.add('clone');
-                    clone.style.left = Math.random() * 90 + '%';
-                    clone.style.top = Math.random() * 90 + '%';
-                    clone.onclick = () => alert("꽝! 이건 가짜지롱~");
-                    container.appendChild(clone);
-                    setTimeout(() => clone.remove(), 2000);
-                }
-            } 
-            else if (effect === 2 || effect === 3) { // 도망가기 + 발로 차기(순간이동)
+        function troll() {
+            // 20% 확률로 섬광탄 발동
+            if (Math.random() < 0.2) {
+                flashLayer.style.opacity = '1';
+                flashText.style.display = 'block';
+                
+                // 버튼은 섬광 속에 숨어서 이동
                 btn.style.left = Math.random() * 80 + 10 + '%';
                 btn.style.top = Math.random() * 80 + 10 + '%';
-            }
-            else if (effect === 4) { // 작아지기
-                btn.style.transform = 'translate(-50%, -50%) scale(0)';
-                setTimeout(() => btn.style.transform = 'translate(-50%, -50%) scale(1)', 1500);
-            }
-            else if (effect === 5) { // 섬광탄
-                flash.style.opacity = '1';
-                setTimeout(() => { 
-                    flash.style.transition = 'opacity 2s';
-                    flash.style.opacity = '0';
-                    btn.style.left = '50%'; btn.style.top = '50%';
-                }, 100);
-            }
-            else if (effect === 6) { // 보호막 (근처 가면 밀어내기)
-                btn.style.boxShadow = '0 0 50px #00ffff';
-                btn.style.left = (Math.random() > 0.5 ? '10%' : '90%');
-            }
-            else if (effect === 7) { // 버튼 먹기(그냥 사라짐)
-                btn.innerText = "😋 냠냠";
+
                 setTimeout(() => {
-                    btn.style.opacity = '0';
-                    setTimeout(() => { btn.style.opacity = '1'; btn.innerText = "보석 받기 💎"; }, 2000);
-                }, 500);
+                    flashLayer.style.transition = 'opacity 2s ease-out';
+                    flashLayer.style.opacity = '0';
+                    setTimeout(() => {
+                        flashLayer.style.transition = 'none';
+                        flashText.style.display = 'none';
+                    }, 2000);
+                }, 500); // 0.5초 동안 풀 화이트 후 2초간 서서히 사라짐
+                return;
+            }
+
+            // 일반 도망가기 로직
+            const newX = Math.random() * 80 + 10;
+            const newY = Math.random() * 80 + 10;
+            btn.style.left = newX + '%';
+            btn.style.top = newY + '%';
+
+            const randomScale = Math.random() * 1.7 + 0.3;
+            btn.style.transform = `translate(-50%, -50%) scale(${randomScale})`;
+
+            // 이모지 효과
+            for(let i=0; i<8; i++) {
+                const el = document.createElement('div');
+                el.className = 'effect';
+                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                el.style.left = btn.style.left;
+                el.style.top = btn.style.top;
+                const moveX = (Math.random() - 0.5) * 400 + 'px';
+                const moveY = (Math.random() - 0.5) * 400 + 'px';
+                el.style.setProperty('--x', moveX);
+                el.style.setProperty('--y', moveY);
+                el.style.animation = 'popOut 0.8s forwards';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 800);
             }
         }
 
-        // 버튼 접근 감지
-        btn.addEventListener('mouseover', runAway);
-        btn.addEventListener('touchstart', (e) => { e.preventDefault(); runAway(); });
-
-        // 진짜 눌렀을 때 (낚시용 로딩)
-        btn.onclick = () => {
-            isTrolling = true;
-            loadingScreen.style.display = 'flex';
-            setTimeout(() => { progress.style.width = '99%'; }, 100);
-            
-            setTimeout(() => {
-                document.getElementById('loading-msg').innerText = "오류: 서버가 응답하지 않습니다 (Error 404)";
-                progress.style.background = "red";
-                setTimeout(() => {
-                    location.reload(); // 처음부터 다시
-                }, 2000);
-            }, 3000);
-        };
+        btn.addEventListener('mouseover', troll);
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); troll(); });
+        btn.onclick = () => alert("못잡았어!");
     </script>
 </body>
 </html>
