@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BUTTEN-RUN:짱짱멋진 럭키, 정우 바보</title>
+    <title>BUTTEN-RUN:정우바보 럭키천재</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; font-family: 'Arial Black', sans-serif; }
         
@@ -56,14 +56,14 @@
 
         function troll() {
             // 1. [추가] 15% 확률로 분신술 발동
-            if (Math.random() < 0.15) {
+            if (Math.random() < 0.25) {
                 for(let i=0; i<12; i++) {
                     const clone = btn.cloneNode(true);
                     clone.id = ""; // ID 중복 방지
                     clone.style.left = Math.random() * 90 + 5 + '%';
                     clone.style.top = Math.random() * 90 + 5 + '%';
                     clone.style.opacity = "0.6";
-                    clone.innerText = "눌러봐!";
+                    clone.innerText = "지금 클릭?";
                     clone.style.pointerEvents = "auto";
                     
                     // 가짜 누르면 알림창 띄우기
