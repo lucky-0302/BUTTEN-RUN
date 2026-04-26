@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUTTEN-RUN: 절대 못 누름</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #111; overflow: hidden; font-family: 'Arial', sans-serif; cursor: crosshair; }
+        #game-container { position: relative; width: 100vw; height: 100vh; }
+        
+        /* 메인 버튼 */
+        .btn {
+            position: absolute; padding: 15px 30px; font-size: 20px; font-weight: bold;
+            color: white; background: linear-gradient(45deg, #ff0055, #ff5500);
+            border: none; border-radius: 50px; cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.1s ease;
+            z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        }
+
+        /* 섬광탄 효과 */
+        #flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 999; }
+        
+        /* 로딩바 */
+        #loading-screen {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; color: white;
+        }
+        .progress-bar { width: 80%; height: 20px; border: 2px solid #fff; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+        .progress { width: 0%; height: 100%; background: #00ff00; transition: width 1s ease; }
+
+        /* 가짜 버튼(분신술) */
+        .clone { position: absolute; opacity: 0.7; pointer-events: auto; }
+
+        h1 { position: absolute; width: 100%; text-align: center; color: #555; top: 20px; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>버튼을 누르면 77,777 보석 지급!</h1>
+        <button id="main-btn" class="btn">보석 받기 💎</button>
+    </div>
+
+    <div id="flash"></div>
+    <div id="loading-screen">
+        <h2 id="loading-msg">데이터 불러오는 중...</h2>
+        <div class="progress-bar"><div id="progress" class="progress"></div></div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('main-btn');
+        const flash = document.getElementById('flash');
+        const loadingScreen = document.getElementById('loading-screen');
+        const progress = document.getElementById('progress');
+        const container = document.getElementById('game-container');
+
+        let isTrolling = false;
+
+        function runAway() {
+            if (isTrolling) return;
+            
+            // 1~7번 중 무작위 효과 발동
+            const effect = Math.floor(Math.random() * 7) + 1;
+
+            if (effect === 1) { // 분신술
+                for(let i=0; i<15; i++) {
+                    const clone = btn.cloneNode(true);
+                    clone.classList.add('clone');
+                    clone.style.left = Math.random() * 90 + '%';
+                    clone.style.top = Math.random() * 90 + '%';
+                    clone.onclick = () => alert("꽝! 이건 가짜지롱~");
+                    container.appendChild(clone);
+                    setTimeout(() => clone.remove(), 2000);
+                }
+            } 
+            else if (effect === 2 || effect === 3) { // 도망가기 + 발로 차기(순간이동)
+                btn.style.left = Math.random() * 80 + 10 + '%';
+                btn.style.top = Math.random() * 80 + 10 + '%';
+            }
+            else if (effect === 4) { // 작아지기
+                btn.style.transform = 'translate(-50%, -50%) scale(0)';
+                setTimeout(() => btn.style.transform = 'translate(-50%, -50%) scale(1)', 1500);
+            }
+            else if (effect === 5) { // 섬광탄
+                flash.style.opacity = '1';
+                setTimeout(() => { 
+                    flash.style.transition = 'opacity 2s';
+                    flash.style.opacity = '0';
+                    btn.style.left = '50%'; btn.style.top = '50%';
+                }, 100);
+            }
+            else if (effect === 6) { // 보호막 (근처 가면 밀어내기)
+                btn.style.boxShadow = '0 0 50px #00ffff';
+                btn.style.left = (Math.random() > 0.5 ? '10%' : '90%');
+            }
+            else if (effect === 7) { // 버튼 먹기(그냥 사라짐)
+                btn.innerText = "😋 냠냠";
+                setTimeout(() => {
+                    btn.style.opacity = '0';
+                    setTimeout(() => { btn.style.opacity = '1'; btn.innerText = "보석 받기 💎"; }, 2000);
+                }, 500);
+            }
+        }
+
+        // 버튼 접근 감지
+        btn.addEventListener('mouseover', runAway);
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); runAway(); });
+
+        // 진짜 눌렀을 때 (낚시용 로딩)
+        btn.onclick = () => {
+            isTrolling = true;
+            loadingScreen.style.display = 'flex';
+            setTimeout(() => { progress.style.width = '99%'; }, 100);
+            
+            setTimeout(() => {
+                document.getElementById('loading-msg').innerText = "오류: 서버가 응답하지 않습니다 (Error 404)";
+                progress.style.background = "red";
+                setTimeout(() => {
+                    location.reload(); // 처음부터 다시
+                }, 2000);
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
