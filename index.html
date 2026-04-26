@@ -3,11 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BUTTEN-RUN: 섬광 주의</title>
+    <title>BUTTEN-RUN: 자석 모드</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; font-family: 'Arial Black', sans-serif; }
         
-        /* 메인 버튼 */
+        .btn {
+            position: absolute; padding: 20px 40px; font-size: 24px; font-weight: 900;
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            animation: rainbow 0.8s infinite linear;
+            /* 자석 효과를 위해 transition을 더 부드럽게 조절 */
+            transition: left 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        top 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        transform 0.2s ease;
+            white-space: nowrap;
+        }
+
         @keyframes rainbow {
             0% { background: #ff0000; box-shadow: 0 0 20px #ff0000; }
             33% { background: #00ff00; box-shadow: 0 0 20px #00ff00; }
@@ -15,95 +26,92 @@
             100% { background: #ff0000; box-shadow: 0 0 20px #ff0000; }
         }
 
-        .btn {
-            position: absolute; padding: 20px 40px; font-size: 24px; font-weight: 900;
-            color: white; border: none; border-radius: 50px; cursor: pointer;
-            z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            animation: rainbow 0.8s infinite linear;
-            transition: left 0.1s ease, top 0.1s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            white-space: nowrap;
-        }
-
-        /* 섬광 레이어 */
         #flash-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; opacity: 0; pointer-events: none; z-index: 1000;
             display: flex; justify-content: center; align-items: center;
         }
-        #flash-text { color: black; font-size: 5rem; font-weight: 900; display: none; }
+        #flash-text { color: black; font-size: 4rem; font-weight: 900; display: none; }
 
-        .effect { position: absolute; pointer-events: none; z-index: 50; font-size: 40px; }
-        @keyframes popOut {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            100% { transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
-        }
-
-        h1 { position: absolute; width: 100%; text-align: center; color: #fff; top: 10%; pointer-events: none; }
+        h1 { position: absolute; width: 100%; text-align: center; color: #fff; top: 5%; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <h1>💎버튼을 누르면 럭키마켓 평생 God 지급!💎</h1>
-    <button id="main-btn" class="btn">지금 클릭!</button>
+    <h1>❤️버튼을 누르면 럭키마켓 평생 God 지급!💎</h1>
+    <button id="main-btn" class="btn">지금 획득!</button>
     
-    <div id="flash-layer"><span id="flash-text">섬광탄이다!</span></div>
+    <div id="flash-layer"><span id="flash-text">✨섬광탄✨</span></div>
 
     <script>
         const btn = document.getElementById('main-btn');
         const flashLayer = document.getElementById('flash-layer');
         const flashText = document.getElementById('flash-text');
-        const emojis = ['😂', '👅', '💨', '🚫', '👻', '🤡'];
+        
+        let isMagnetMode = false;
 
+        // 1. 일반적인 도망가기 & 섬광탄 로직
         function troll() {
-            // 20% 확률로 섬광탄 발동
-            if (Math.random() < 0.2) {
+            if (isMagnetMode) return; // 자석 모드일 땐 일반 도망 중지
+
+            if (Math.random() < 0.2) { // 섬광탄 확률
                 flashLayer.style.opacity = '1';
                 flashText.style.display = 'block';
-                
-                // 버튼은 섬광 속에 숨어서 이동
                 btn.style.left = Math.random() * 80 + 10 + '%';
                 btn.style.top = Math.random() * 80 + 10 + '%';
-
                 setTimeout(() => {
-                    flashLayer.style.transition = 'opacity 2s ease-out';
+                    flashLayer.style.transition = 'opacity 1.5s';
                     flashLayer.style.opacity = '0';
-                    setTimeout(() => {
-                        flashLayer.style.transition = 'none';
-                        flashText.style.display = 'none';
-                    }, 2000);
-                }, 500); // 0.5초 동안 풀 화이트 후 2초간 서서히 사라짐
+                    setTimeout(() => { flashText.style.display = 'none'; }, 1500);
+                }, 400);
                 return;
             }
 
-            // 일반 도망가기 로직
-            const newX = Math.random() * 80 + 10;
-            const newY = Math.random() * 80 + 10;
-            btn.style.left = newX + '%';
-            btn.style.top = newY + '%';
-
-            const randomScale = Math.random() * 1.7 + 0.3;
-            btn.style.transform = `translate(-50%, -50%) scale(${randomScale})`;
-
-            // 이모지 효과
-            for(let i=0; i<8; i++) {
-                const el = document.createElement('div');
-                el.className = 'effect';
-                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                el.style.left = btn.style.left;
-                el.style.top = btn.style.top;
-                const moveX = (Math.random() - 0.5) * 400 + 'px';
-                const moveY = (Math.random() - 0.5) * 400 + 'px';
-                el.style.setProperty('--x', moveX);
-                el.style.setProperty('--y', moveY);
-                el.style.animation = 'popOut 0.8s forwards';
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 800);
-            }
+            // 무작위 이동 및 크기 변화
+            btn.style.left = Math.random() * 80 + 10 + '%';
+            btn.style.top = Math.random() * 80 + 10 + '%';
+            btn.style.transform = `translate(-50%, -50%) scale(${Math.random() * 1.5 + 0.5})`;
         }
 
+        // 2. 자석 밀어내기 로직 (핵심)
+        document.addEventListener('mousemove', (e) => {
+            const btnRect = btn.getBoundingClientRect();
+            const btnX = btnRect.left + btnRect.width / 2;
+            const btnY = btnRect.top + btnRect.height / 2;
+            
+            // 마우스와 버튼 사이 거리 계산
+            const distance = Math.sqrt(Math.pow(e.clientX - btnX, 2) + Math.pow(e.clientY - btnY, 2));
+
+            // 150px 안으로 들어오면 자석 모드 활성화
+            if (distance < 150) {
+                isMagnetMode = true;
+                const angle = Math.atan2(e.clientY - btnY, e.clientX - btnX);
+                
+                // 마우스 반대 방향으로 100px 밀려나기
+                const pushX = Math.cos(angle) * -150;
+                const pushY = Math.sin(angle) * -150;
+
+                let newLeft = btnX + pushX;
+                let newTop = btnY + pushY;
+
+                // 화면 밖으로 안 나가게 조절
+                newLeft = Math.max(50, Math.min(window.innerWidth - 50, newLeft));
+                newTop = Math.max(50, Math.min(window.innerHeight - 50, newTop));
+
+                btn.style.left = newLeft + 'px';
+                btn.style.top = newTop + 'px';
+                btn.innerText = "😂";
+            } else {
+                isMagnetMode = false;
+                btn.innerText = "지금 획득!";
+            }
+        });
+
+        // 컴 & 폰 대응
         btn.addEventListener('mouseover', troll);
         btn.addEventListener('touchstart', (e) => { e.preventDefault(); troll(); });
-        btn.onclick = () => alert("못잡았어!");
+
+        btn.onclick = () => alert("구라에요😂");
     </script>
 </body>
 </html>
